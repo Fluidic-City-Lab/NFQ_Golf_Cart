@@ -25,6 +25,7 @@ class NFQNetwork(nn.Module):
         return self.layers(x)
         
 
+# Use case:
 # Print model structure and weights, correctly initialized?
 # model = NFQNetwork()
 # print(model)

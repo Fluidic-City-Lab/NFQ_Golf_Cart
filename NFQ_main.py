@@ -17,4 +17,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default="CartPole-v0")
+
+    parser.add_argument("--data_dir", type=str, default='./Data')
     main(parser.parse_args())
