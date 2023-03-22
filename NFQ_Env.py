@@ -6,6 +6,9 @@ Contains 2 parts:
         b. A reward function
 
     The transition function is built upon the KNN algorithm (with k=1) applied to the data collected form hardware.
+        Step 1: For a given state, we find the nearest neighbor
+        Step 2: We transition to the same state as the nearest neighbor
+
 2. Hardware
 """
 import os 
@@ -17,7 +20,7 @@ from scipy.spatial import KDTree
 class Simulation():
     """
     Query a state and action and receive next state
-    The reward is ?
+    The reward is not defined here?
     """
     def __init__(self):
 
@@ -45,7 +48,7 @@ class Simulation():
                     print("Total Epochs: ", len(file))
 
                     # Only load the last epoch
-                    # Since this is real-time training data, the last epoch is where the hardware agent had learned best
+                    # Since this is real-time training data, the last epoch is where the hardware agent had learned best (most of the times)
 
                     last_item = file[-1]
                     #print(last_item)
@@ -104,4 +107,4 @@ class Simulation():
 # print(f"\nNext state: {next_state}\n")
 
 # TODO: Interface the Hardware Environment here
-# The hardware has its own code atm.
+# The hardware has its own code ATM.
