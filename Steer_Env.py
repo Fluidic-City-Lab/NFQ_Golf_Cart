@@ -10,6 +10,8 @@ They are reported as variance and not std in the paper.
 3. Uniform in the range
 4. Linear increment
 5. Exponential increment
+
+Note: Epoch and episode are used interchangeably.
 """
 
 class SteerBoxEnv: 

@@ -9,6 +9,8 @@ Contains 2 parts:
         Step 1: For a given state, we find the nearest neighbor
         Step 2: We transition to the same state as the nearest neighbor
 
+    The reward function is defined in SteerBoxEnv
+    
 2. Hardware: TBD
 """
 import os 
@@ -20,7 +22,6 @@ from scipy.spatial import KDTree
 class Simulation():
     """
     Query a state and action and receive next state
-    The reward is not defined here?
     """
     def __init__(self):
 
