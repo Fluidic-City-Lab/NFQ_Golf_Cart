@@ -6,6 +6,8 @@ class NFQNetwork(nn.Module):
     Neural Network size was varied in 5 sizes each with param counts: 
     Param counts: 39, 61, 91, 121, 171
     Example calaulation: 91: [4, 8, 5, 1], calculated as 4*8 + 8 + 8*5 + 5 + 5*1 + 1
+
+    For real-time learning, param count is kept small.
     """
     def __init__(self, param_count):
         super().__init__()

@@ -9,7 +9,7 @@ Contains 2 parts:
         Step 1: For a given state, we find the nearest neighbor
         Step 2: We transition to the same state as the nearest neighbor
 
-2. Hardware
+2. Hardware: TBD
 """
 import os 
 import lzma
