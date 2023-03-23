@@ -4,13 +4,13 @@ Related: [Paper](https://arxiv.org/abs/2108.00138),  [Website](https://stars-cs.
 
 
 ------
-## 1. Installation and major Code Dependencies
+## 1. Installation and Major Code Dependencies
 ```
 
 ```
 
 ------
-## 2. Understanding the code:
+## 2. Understanding the Code:
 
 
 -------
