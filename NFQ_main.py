@@ -21,6 +21,7 @@ import torch
 from NFQ_Agent import NFQAgent
 from Steer_Env import SteerBoxEnv
 from NFQ_model import NFQNetwork
+from NFQ_Env import Simulation
 
 class NFQMain:
     def __init__(self, args):
@@ -44,8 +45,10 @@ class NFQMain:
         torch.manual_seed(seed)
 
         self.agent = NFQAgent(self.args)
-        #self.env = 
+        self.env = Simulation()
         #self.network =     
+
+        self.env.build(self.args.data_dir)
 
         start = time.time()
         total_cost = 0

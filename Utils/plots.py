@@ -1,3 +1,8 @@
+"""
+Use pandas or some new utility to calculate the moving average 
+
+"""
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
