@@ -3,7 +3,7 @@
 Related: [Paper](https://arxiv.org/abs/2108.00138),  [Website](https://stars-cs.github.io/projects/2022-06-poudel2022nfq),  [Slides](https://raw.githubusercontent.com/poudel-bibek/poudel-bibek.github.io/main/hosted_files/Other_files/NFQ_Golf_Cart.pdf), [Video](https://www.youtube.com/watch?v=TgZS54wQ3ss)
 
 
-![Alt Text](https://github.com/poudel-bibek/NFQ_Golf_Cart/blob/main/site_assets/Oscillate.gif?raw=true)
+![Alt Text](https://github.com/poudel-bibek/NFQ_Golf_Cart/blob/main/site_assets/oscillate_small.gif?raw=true)
 
 
 ------
