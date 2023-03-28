@@ -79,7 +79,11 @@ Five experiments are performed:
 
 Choose experiments from the arguments in `NFQ_main.py`
 
-
+<p align="center">
+  <img src="https://github.com/poudel-bibek/NFQ_Golf_Cart/blob/main/site_assets/experiments.png?raw=true" width="650" height="150" alt="Alt Text">
+  <br>
+  <i>After conducting experiments</i>
+</p>
 
 -------
 ## Cite
