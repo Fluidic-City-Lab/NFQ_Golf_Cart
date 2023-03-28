@@ -27,20 +27,24 @@ pip install -r requirements.txt
 ------
 ## 2. Understanding the Code:
 
-NFQ_main: Central file integrating all components
-NFQ_Env: Simulates environment; hardware execution separate from XXX
-NFQ_model: Establishes neural network and Q-function approximator
-NFQ_Agent: Manages NFQ algorithm functions, supervised data generation, and model training
-Steerbox_Env: Handles position initialization strategies and environment interaction
-Steerbox_NFQ: Covers additional NFQ functions, goal pattern sets, experience collection, and reward definition
+`NFQ_main`: Central file integrating all components
+`NFQ_Env`: Simulates environment; hardware execution separate from XXX
+`NFQ_model`: Establishes neural network and Q-function approximator
+`NFQ_Agent`: Manages NFQ algorithm functions, supervised data generation, and model training
+`Steerbox_Env`: Handles position initialization strategies and environment interaction
+`Steerbox_NFQ`: Covers additional NFQ functions, goal pattern sets, experience collection, and reward definition
 
-Utils folder: Provides utilities for generating plots and exploration strategies.
+`Utils folder`: Provides utilities for generating plots and exploration strategies.
 
 ------
 ## 3. Running the Code:
 
 ```
+# run on default arguments
+python NFQ_main.py 
 
+# run on experiment related arguments
+python NFQ_main.py ....
 ```
 
 ------
