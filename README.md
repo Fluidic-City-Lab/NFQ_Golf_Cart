@@ -17,13 +17,57 @@ Related: [Paper](https://arxiv.org/abs/2108.00138),  [Website](https://stars-cs.
 
 ------
 ## 1. Installation and Major Code Dependencies
-```
 
+Major dependencies are 
+
+```
+pip install -r requirements.txt 
 ```
 
 ------
 ## 2. Understanding the Code:
 
+NFQ_main: Central file integrating all components
+NFQ_Env: Simulates environment; hardware execution separate from XXX
+NFQ_model: Establishes neural network and Q-function approximator
+NFQ_Agent: Manages NFQ algorithm functions, supervised data generation, and model training
+Steerbox_Env: Handles position initialization strategies and environment interaction
+Steerbox_NFQ: Covers additional NFQ functions, goal pattern sets, experience collection, and reward definition
+
+Utils folder: Provides utilities for generating plots and exploration strategies.
+
+------
+## 3. Running the Code:
+
+```
+
+```
+
+------
+## 4. Experiments:
+
+1. Parameter count of neural network: 
+  - 39, 61, 91, 121, 171
+  
+2. Size of Hint-to-goal transitions: 
+  - 1%, 2%, 5%, 10%, 20%
+  
+3. Exploration strategy: 
+  - No exploration 
+  - epsilon-greedy constant 2%
+  - epsilon-greedy constant 10%
+  - Linearly decaying epsilon-greedy
+  - Exponentially decaying epsilon-greedy
+ 
+4. Neural network reset frequency:
+  - No reset, reset every: 1, 10, 50, 100 episodes 
+  
+5. Steering wheel position initialization: 
+  - Sampled from a Gaussian distribution with mean= 0, variance= 0.02 
+  - Sampled from a Gaussian distribution with mean= 0, variance= 0.09
+  - Uniformly in the range [-0.5, 0.5]
+  - Linearly expanding range as epochs progress
+  - Exponentially expanding range as epochs progress
 
 -------
 ## Cite
