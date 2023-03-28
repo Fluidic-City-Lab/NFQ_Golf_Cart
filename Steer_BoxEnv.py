@@ -82,7 +82,7 @@ class SteerboxNFQ:
                 break 
         
         if success_indicator ==1:
-            plots.plot_success()
+            plots.plot_success(experiences, max_steps)
             
         return success_indicator, experiences, total_cost
     

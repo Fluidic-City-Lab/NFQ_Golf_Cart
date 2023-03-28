@@ -89,3 +89,6 @@ def plot_success(experiences, max_steps, xticks=xticks):
     #plt.show()
     plt.savefig(success_plots_folder + "success.png", bbox_inches='tight')
     pass 
+
+
+####### FINAL PLOTS IN THE PAPER ########

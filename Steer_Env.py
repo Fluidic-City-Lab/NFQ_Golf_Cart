@@ -10,6 +10,7 @@ They are reported as variance and not std in the paper.
 Note: Epoch and episode are used interchangeably.
 """
 
+import sys
 import random
 import torch 
 import numpy as np 
@@ -25,8 +26,10 @@ State = namedtuple('State', [
 ])
 
 class SteerBoxEnv: 
-    def __init__(self):
+    def __init__(self, env, env_type='simulation'):
         self.state = None 
+        self.env=env
+        self.env_type=env_type
 
     # gaussian 1 
     def position_gaussian_1(self,epoch_no, epochs):
@@ -70,16 +73,22 @@ class SteerBoxEnv:
     
     def step(self, action):
         
-        # perform the action in the environment and return the new state
-        next_state = query_tree(self.state, action)
+        if self.env_type=='simulation':
+            # perform the action in the environment and return the new state
+            next_state = self.env.query_tree(self.state, action)
+            # integrate the action directly as we can't trust the table to do it properly
+            self.state = (next_state[0], next_state[1], self.last_voltage)
+            
+            # For simulation, change in voltate instead of actual voltage 
+            dv = -0.1 if action == 0 else 0.1
+            self.last_voltage = max(-1, min(1, self.last_voltage + dv))
+
+            return np.array(self.state)
+
+        else:
+            # TODO: When implementing hardware add here
+            print("Hardware not implemented yet")
+            sys.exit(0) 
         
-        # integrate the action directly as we can't trust the table to do it properly
-        self.state = (next_state[0], next_state[1], self.last_voltage)
-        dv = -0.1 if action == 0 else 0.1
-        
-        self.last_voltage = max(-1, min(1, self.last_voltage + dv))
-        
-        return np.array(self.state)
-    
     def close(self):
         print("Closed")

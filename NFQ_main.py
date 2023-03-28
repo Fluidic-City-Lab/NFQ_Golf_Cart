@@ -35,7 +35,7 @@ class NFQMain:
         # generate unique seed for each experiment
         seeds = [random.randint(0, 1000000) for i in range(self.args.num_experiments)]
         
-        # TODO: make it work with multiple experiments
+        # TODO: make it work on multiple (5) experiments at a time and average the results
         #for i in range(self.args.num_experiments):
         #print(f"Experiment: {i}, seed ={seeds[i]}")
 
@@ -52,6 +52,12 @@ class NFQMain:
 
         start = time.time()
         total_cost = 0
+
+        # Create folder to save sim data if required
+        if self.args.env == "Simulation":
+            if self.args.save_to_file:
+                if not os.path.exists("Simulation_Data"):
+                    os.mkdir("Simulation_Data")
 
         for ep in range(1, self.args.episodes+1):
             print(f"Episode: {ep}")
@@ -70,11 +76,21 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default="Simulation", help="Choose environment: Simulation or Real")
-    parser.add_argument("--data_dir", type=str, default='./Data', help="Directory to store data hardware data, or laod data to build simulation")
+    parser.add_argument("--data_dir", type=str, default='./Hardware_Data', help="Directory to store data hardware data, or laod data to build simulation")
     parser.add_argument("--num_experiments", type=int, default=1, help="Number of experiments to run and average results")
 
     #parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--episodes", type=int, default=300, help="Number of episodes to train for")
     parser.add_argument("--train_max_steps", type=int, default=250, help="Number of time-steps at each training episode")
     parser.add_argument("--test_max_steps", type=int, default=300, help="Number of time-steps at each test episode")
+    
+    ##
+    parser.add_argument("--agent_epochs", type=int, default=150, help="How many training epochs of patter-set for agent training")
+    parser.add_argument("--gamma", type=int, default=1.0, help="Discount factor")
+
+    # save_to_file, store_true
+    parser.add_argument("--save_to_file", type=bool, default=False, help="Save results to file")
+
     main(parser.parse_args())
+
+# TODO: Save the terminal output to a log file, present in regressor code
