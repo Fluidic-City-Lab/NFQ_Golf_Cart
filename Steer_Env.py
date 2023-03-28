@@ -1,7 +1,3 @@
-import random
-import torch 
-import numpy as np 
-
 """
 Define 5 position initialization strategies in the range [-0.5, 0.5].
 They are reported as variance and not std in the paper.
@@ -13,6 +9,20 @@ They are reported as variance and not std in the paper.
 
 Note: Epoch and episode are used interchangeably.
 """
+
+import random
+import torch 
+import numpy as np 
+from collections import namedtuple
+
+# State definition
+State = namedtuple('State', [
+    "pos", # current position in fractions of a circle (0 = straight ahead)
+    "vel", # velocity, i.e. the difference between the current and last position
+    "voltage", # current voltage of the motor
+               # (0 = stopped, 1 = full speed clockwise,
+               #  -1 = full speed anti-clockwise)
+])
 
 class SteerBoxEnv: 
     def __init__(self):
@@ -45,3 +55,31 @@ class SteerBoxEnv:
         end_pos = 0.5 # Anywhere up to the position success
         limit = np.min([end_pos, np.exp(epoch_no)/(0.5*np.exp(200))])
         return ((2*random.random())-1)*limit
+    
+    #set the starting position of the wheel
+    def reset(self, epoch_no, epochs):
+        
+        # Change this function to any of the 5 choices above, while performing experiments
+        pos = self.position_uniform(epoch_no, epochs)
+        #print("Start Position", pos)
+
+        # initialize the current state
+        self.state = State(pos, 0, 0)
+        self.last_voltage = 0
+        return np.array(self.state)
+    
+    def step(self, action):
+        
+        # perform the action in the environment and return the new state
+        next_state = query_tree(self.state, action)
+        
+        # integrate the action directly as we can't trust the table to do it properly
+        self.state = (next_state[0], next_state[1], self.last_voltage)
+        dv = -0.1 if action == 0 else 0.1
+        
+        self.last_voltage = max(-1, min(1, self.last_voltage + dv))
+        
+        return np.array(self.state)
+    
+    def close(self):
+        print("Closed")
