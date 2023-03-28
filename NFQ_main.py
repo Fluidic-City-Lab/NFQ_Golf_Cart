@@ -9,19 +9,24 @@
 NFQ paper: https://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf
 """
 
-import argparse
+
 import os
+import sys
 import time 
 import lzma 
 import random
+import argparse
 
 import numpy as np 
 import torch 
 
 from NFQ_Agent import NFQAgent
-from Steer_Env import SteerBoxEnv
 from NFQ_model import NFQNetwork
 from NFQ_Env import Simulation
+from Steerbox_Env import SteerboxEnv
+from Steerbox_NFQ import SteerboxNFQ 
+
+from utils.exploration_strategies import exploration_strategies
 
 class NFQMain:
     def __init__(self, args):
@@ -44,29 +49,56 @@ class NFQMain:
         np.random.seed(seed)
         torch.manual_seed(seed)
 
-        self.agent = NFQAgent(self.args)
-        self.env = Simulation()
-        #self.network =     
-
-        self.env.build(self.args.data_dir)
-
-        start = time.time()
-        total_cost = 0
-
-        # Create folder to save sim data if required
+        # Initialize various heirarchies of environments
         if self.args.env == "Simulation":
+            self.env = Simulation()
+            self.steer_env = SteerboxEnv(self.env, env_type='simulation')
+            self.env.build(self.args.data_dir)
+
+            # Create folder to save sim data if required
             if self.args.save_to_file:
                 if not os.path.exists("Simulation_Data"):
                     os.mkdir("Simulation_Data")
 
+        else:
+            # TODO: implement hardware environment
+            print("Hardware environment not implemented yet.")
+            sys.exit()
+        
+        self.nfq_env = SteerboxNFQ(self.steer_env)
+        self.nfq_agent = NFQAgent(self.args)   
+
+        # Things that measure, collect
+        start = time.time()
+        total_cost = 0
+        success_count = 0 
+        all_learn_data = [] 
+        all_experiences = [] 
+
+        exploration = exploration_strategies[self.args.exploration]
+
         for ep in range(1, self.args.episodes+1):
             print(f"Episode: {ep}")
 
-            self.agent.train()
-            #self.agent.evaluate()
-            #self.agent.save_model()
+            # Perform an agent rollout
+            success, new_experiences, episode_cost = self.nfq_env.experience(exploration, self.args.train_max_steps, ep, self.args.episodes)
+            success_count += success
+            all_experiences.extend(new_experiences)
+            total_cost += episode_cost
 
-        pass
+            # hint-to-goal (% of total transitions)
+            size = 
+
+            # Goal pattern set 
+
+
+            # Reset the Neural Network (Q-function approximator)
+            if ep % self.args.reset_freq == 0:
+                # Reset the weights
+                self.nfq_agent = NFQAgent(self.args)
+
+
+        
 
 
 def main(args):
@@ -87,9 +119,12 @@ if __name__ == "__main__":
     ##
     parser.add_argument("--agent_epochs", type=int, default=150, help="How many training epochs of patter-set for agent training")
     parser.add_argument("--gamma", type=int, default=1.0, help="Discount factor")
-
-    # save_to_file, store_true
     parser.add_argument("--save_to_file", type=bool, default=False, help="Save results to file")
+    
+    ## Related to experiments
+    parser.add_argument("--exploration", type=str, default="epsilon_greedy", help="Choose exploration strategy:  XXX ")
+    parser.add_argument("--hint_size", type=int, default=10, help="Size of hint-to-goal transitions. Choose from []")
+    parser.add_argument("--reset_freq", type=int, default=50, help="Frequency of resetting the Neural Network (Q-function approximator). Choose from  []")
 
     main(parser.parse_args())
 

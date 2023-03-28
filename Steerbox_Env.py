@@ -25,8 +25,8 @@ State = namedtuple('State', [
                #  -1 = full speed anti-clockwise)
 ])
 
-class SteerBoxEnv: 
-    def __init__(self, env, env_type='simulation'):
+class SteerboxEnv: 
+    def __init__(self, env, env_type):
         self.state = None 
         self.env=env
         self.env_type=env_type

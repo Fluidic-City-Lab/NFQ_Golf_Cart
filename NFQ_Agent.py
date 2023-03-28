@@ -1,8 +1,8 @@
 """
 Defines the Agent
-Defines various exploration strategies
 """
 import torch 
+import random
 import torch.optim as optim
 import torch.nn as nn
 import numpy as np 
@@ -85,51 +85,3 @@ class NFQAgent:
         pass
 
 
-# Exploration strategies
-#def explore
-
-# epsilon-greedy exploration, linear decay (100% TO 5%)
-# def train_best_action(*args):
-#     r = random.random()
-    
-#     # Linear decay percentage
-#     remaining = (EPOCHS - epoch)/EPOCHS
-
-#     if r < remaining:
-#         # Take random action
-#         half = remaining/2
-#         return 0 if r < half else 1
-    
-#     elif remaining <= 0.05:
-#         # If less than 5% always take definite action
-#         return nfq_agent.get_best_action(*args)
-#     else: 
-#         # Otherwise take definite action
-#         return nfq_agent.get_best_action(*args)
-    
-    
-# epsilon-greedy exploration, exponential decay (100 TO 5%)
-# def train_best_action(*args):
-#     r = random.random()
-    
-#     # Linear decay percentage
-#     remaining = np.exp(-0.015*epoch) #(EPOCHS - epoch)/EPOCHS
-#     #print(remaining)
-#     if r < remaining:
-#         # Take random action
-#         half = remaining/2
-#         return 0 if r < half else 1
-    
-#     elif remaining <= 0.05:
-#         # If less than 5% always take definite action
-#         return nfq_agent.get_best_action(*args)
-#     else: 
-#         # Otherwise take definite action
-#         return nfq_agent.get_best_action(*args)
-
-# def train_best_action(*args):
-    
-#     r = random.random()
-#     if r < 0.1:
-#         return 0 if r < 0.05 else 1
-#     return nfq_agent.get_best_action(*args)
