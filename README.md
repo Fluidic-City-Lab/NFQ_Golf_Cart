@@ -15,6 +15,11 @@ Related: [Paper](https://arxiv.org/abs/2108.00138),  [Website](https://stars-cs.
   <i>Green= Goal states, Blue= Initial states, Red= Forbidden states</i>
 </p>
 
+<p align="center">
+  <img src="https://github.com/poudel-bibek/NFQ_Golf_Cart/blob/main/site_assets/schematic.png?raw=true" alt="Alt Text">
+  <br>
+  <i>System diagram</i>
+</p>
 
 ------
 ## 1. Installation and Major Code Dependencies
