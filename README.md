@@ -46,28 +46,7 @@ Utils folder: Provides utilities for generating plots and exploration strategies
 ------
 ## 4. Experiments:
 
-1. Parameter count of neural network: 
-  - 39, 61, 91, 121, 171
-  
-2. Size of Hint-to-goal transitions: 
-  - 1%, 2%, 5%, 10%, 20%
-  
-3. Exploration strategy: 
-  - No exploration 
-  - epsilon-greedy constant 2%
-  - epsilon-greedy constant 10%
-  - Linearly decaying epsilon-greedy
-  - Exponentially decaying epsilon-greedy
- 
-4. Neural network reset frequency:
-  - No reset, reset every: 1, 10, 50, 100 episodes 
-  
-5. Steering wheel position initialization: 
-  - Sampled from a Gaussian distribution with mean= 0, variance= 0.02 
-  - Sampled from a Gaussian distribution with mean= 0, variance= 0.09
-  - Uniformly in the range [-0.5, 0.5]
-  - Linearly expanding range as epochs progress
-  - Exponentially expanding range as epochs progress
+Five experiments are performed: 
 
 | # | Experiment                        | Options                                                           |
 |---|-----------------------------------|-------------------------------------------------------------------|
@@ -88,6 +67,9 @@ Utils folder: Provides utilities for generating plots and exploration strategies
 |   |                                   | Uniform: range [-0.5, 0.5],                                       |
 |   |                                   | Linearly expanding range,                                         |
 |   |                                   | Exponentially expanding range                                     |
+
+Choose experiments from the arguments in `NFQ_main.py`
+
 
 
 -------
