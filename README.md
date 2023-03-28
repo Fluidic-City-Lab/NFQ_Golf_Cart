@@ -80,7 +80,7 @@ Five experiments are performed:
 Choose experiments from the arguments in `NFQ_main.py`
 
 <p align="center">
-  <img src="https://github.com/poudel-bibek/NFQ_Golf_Cart/blob/main/site_assets/experiments.png?raw=true" width="650" height="150" alt="Alt Text">
+  <img src="https://github.com/poudel-bibek/NFQ_Golf_Cart/blob/main/site_assets/experiments.png?raw=true" alt="Alt Text">
   <br>
   <i>Results of experiments (each averaged over 5 simulation runs)</i>
 </p>
