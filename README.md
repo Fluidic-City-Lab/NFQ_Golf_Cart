@@ -31,7 +31,7 @@ pip install -r requirements.txt
 
 `NFQ_Env`: Simulates environment; hardware execution separate from `XXX`.
 
-`NFQ_model`: Defined the neural network (Q-function approximator).
+`NFQ_model`: Defines the neural network (Q-function approximator).
 
 `NFQ_Agent`: Manages NFQ algorithm functions, supervised data generation, and model training.
 
