@@ -19,6 +19,7 @@ Related: [Paper](https://arxiv.org/abs/2108.00138),  [Website](https://stars-cs.
 ## 1. Installation and Major Code Dependencies
 
 Built on `Python 3.9.16`, Install NVIDIA Drivers + CUDA if you want to use GPU.
+
 Intstall requirements:
 
 ```
