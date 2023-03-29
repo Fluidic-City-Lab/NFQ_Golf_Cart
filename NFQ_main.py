@@ -68,7 +68,7 @@ class NFQMain:
             sys.exit()
         
         self.nfq_env = SteerboxNFQ(self.steer_env)
-        self.nfq_agent = NFQAgent( ,self.args)   
+        self.nfq_agent = NFQAgent(self.args)   
 
         # Things that measure, collect
         start = time.time()
@@ -83,17 +83,26 @@ class NFQMain:
         goal_state_action_b = []
         goal_target_q_values = []
 
-        # Which strategy to use for exploration
-        exploration = exploration_strategies[self.args.exploration]
-
         for ep in range(1, self.args.episodes+1):
             print(f"Episode: {ep}")
 
+            # Which strategy to use for exploration
+            exploration = exploration_strategies(self.nfq_agent, self.args.exploration, ep)
+
+
             # Perform an agent rollout
-            success, new_experiences, episode_cost = self.nfq_env.experience(exploration, self.args.train_max_steps, ep, self.args.episodes)
+            success, new_experiences, episode_cost = self.nfq_env.experience(
+                lambda *args: exploration(*args),
+                self.args.train_max_steps,
+                ep,
+                self.args.episodes
+            )
             success_count += success
             all_experiences.extend(new_experiences)
             total_cost += episode_cost
+
+            # Generate the pattern set
+            state_action_b, target_q_values = self.nfq_agent.generate_pattern_set(all_experiences)
 
             # hint-to-goal (% of total transitions), has to be calculated every time
             # only calculate how much to add i.e. the difference between desired and current
@@ -105,12 +114,12 @@ class NFQMain:
             goal_target_q_values.extend(new_goal_target_q_values)
 
             # Convert to tensors
-            goal_state_action_b = torch.FloatTensor(goal_state_action_b)
-            goal_target_q_values = torch.FloatTensor(goal_target_q_values)
+            t_goal_state_action_b = torch.FloatTensor(np.array(goal_state_action_b)) 
+            t_goal_target_q_values = torch.FloatTensor(np.array(goal_target_q_values)) 
 
             # Attach hint-to-goal transitions
-            state_action_b = torch.cat([state_action_b, goal_state_action_b], dim=0)
-            target_q_values = torch.cat([target_q_values, goal_target_q_values], dim=0)
+            state_action_b = torch.cat([state_action_b, t_goal_state_action_b], dim=0)
+            target_q_values = torch.cat([target_q_values, t_goal_target_q_values], dim=0)
 
             # Hand over the current neural network
             old_agent = self.nfq_agent
@@ -175,7 +184,7 @@ class NFQMain:
                 break
 
             end = time.time()
-            print("\nTotal Time elapsed = {} seconds".format(end - start))
+            print(f"\n\tTotal Time elapsed = {round((end - start), 2)} seconds")
 
 
 def main(args):
@@ -199,8 +208,8 @@ if __name__ == "__main__":
     parser.add_argument("--save_to_file", type=bool, default=False, help="Save results to file")
     
     ## Related to experiments
-    
-    parser.add_argument("--exploration", type=str, default="epsilon_greedy", help="Choose exploration strategy:  XXX ")
+    parser.add_argument("--num_params", type=int, default=171, help="Number of parameters to be learned, choose from 39, 61, 91, 121, 171")
+    parser.add_argument("--exploration", type=str, default="exponential", help="Choose exploration strategy: linear, exponential, constant_ten, constant_two, no_exploration ")
     parser.add_argument("--hint_size", type=int, default=10, help="Size of hint-to-goal transitions. Choose from []")
     parser.add_argument("--reset_freq", type=int, default=50, help="Frequency of resetting the Neural Network (Q-function approximator). Choose from  []")
 

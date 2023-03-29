@@ -13,7 +13,7 @@ class NFQAgent:
     def __init__(self, args):
         
         self.args = args
-        self.net = NFQNetwork() 
+        self.net = NFQNetwork(self.args.num_params) 
         self.optimizer = optim.Rprop(self.net.parameters()) # Rprop is the default for NFQ
         
     def get_best_action(self, state):
@@ -42,10 +42,12 @@ class NFQAgent:
         states, actions, costs, next_states, dones = zip(*experiences)
         
         # b means batch
-        state_b = torch.FloatTensor(states)
+        #state_b = torch.FloatTensor(states) # This is slow
+        state_b = torch.FloatTensor(np.array(states))
         action_b = torch.FloatTensor(actions)
         cost_b = torch.FloatTensor(costs)
-        next_state_b = torch.FloatTensor(next_states)
+        #next_state_b = torch.FloatTensor(next_states) # This is slow
+        next_state_b = torch.FloatTensor(np.array(next_states))
         done_b = torch.FloatTensor(dones)
 
         state_action_b = torch.cat([state_b, action_b.unsqueeze(1)], 1)

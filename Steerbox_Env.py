@@ -75,7 +75,7 @@ class SteerboxEnv:
         
         if self.env_type=='simulation':
             # perform the action in the environment and return the new state
-            next_state = self.env.query_tree(self.state, action)
+            next_state = self.env.query(self.state, action)
             # integrate the action directly as we can't trust the table to do it properly
             self.state = (next_state[0], next_state[1], self.last_voltage)
             
