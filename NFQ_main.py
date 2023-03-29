@@ -3,7 +3,7 @@
 1. Parameter count of neural network
 2. Size of Hint-to-goal transitions
 3. Exploration strategy
-4. Neural network reset frequence
+4. Neural network reset frequency
 5. Steering wheel position initialization
 
 NFQ paper: https://ml.informatik.uni-freiburg.de/former/_media/publications/rieecml05.pdf
@@ -40,6 +40,10 @@ class NFQMain:
         
         # generate unique seed for each experiment
         seeds = [random.randint(0, 1000000) for i in range(self.args.num_experiments)]
+        
+        print(f"\nRunning the following experiment:\n\t1. Neural Network Parameter count: {self.args.num_params}\
+            \n\t2. Size of Hint-to-goal transitions: {self.args.hint_size}%\n\t3. Exploration strategy: {self.args.exploration}\
+            \n\t4. Neural network reset frequency: every {self.args.reset_freq} episodes\n\t5. Steering wheel position initialization: {self.args.pos_init}\n")
         
         # TODO: make it work on multiple (5) experiments at a time and average the results
         #for i in range(self.args.num_experiments):
@@ -83,6 +87,8 @@ class NFQMain:
         goal_state_action_b = []
         goal_target_q_values = []
 
+        print(f"\n\nStarted Training for {self.args.episodes} episodes")
+        print("................................")
         for ep in range(1, self.args.episodes+1):
             print(f"Episode: {ep}")
 
@@ -95,7 +101,8 @@ class NFQMain:
                 lambda *args: exploration(*args),
                 self.args.train_max_steps,
                 ep,
-                self.args.episodes
+                self.args.episodes,
+                self.args.pos_init
             )
             success_count += success
             all_experiences.extend(new_experiences)
@@ -142,7 +149,7 @@ class NFQMain:
 
             # # Evaluate the agent 
             # while False: 
-            #     eval_episode_length, eval_success, eval_episode_cost = nfq_agent.evaluate(nfq_env, EVAL_ENV_MAX_STEPS, epoch, EPOCHS)
+            #     eval_episode_length, eval_success, eval_episode_cost = nfq_agent.evaluate(nfq_env, EVAL_ENV_MAX_STEPS, epoch, EPOCHS, self.args.pos_init)
             #     if not eval_success: 
             #         break
             #     num_evals += 1
@@ -202,17 +209,18 @@ if __name__ == "__main__":
     parser.add_argument("--train_max_steps", type=int, default=250, help="Number of time-steps at each training episode")
     parser.add_argument("--test_max_steps", type=int, default=300, help="Number of time-steps at each test episode")
     
-    ##
+    ## 
     parser.add_argument("--agent_epochs", type=int, default=150, help="How many training epochs of patter-set for agent training")
     parser.add_argument("--gamma", type=int, default=1.0, help="Discount factor")
     parser.add_argument("--save_to_file", type=bool, default=False, help="Save results to file")
     
-    ## Related to experiments
+    ## Args related to experiments form the paper (https://arxiv.org/pdf/2108.00138.pdf)
     parser.add_argument("--num_params", type=int, default=171, help="Number of parameters to be learned, choose from 39, 61, 91, 121, 171")
+    parser.add_argument("--hint_size", type=int, default=10, help="Size of hint-to-goal transitions. Choose from 1%, 2%, 5%, 10%, 20%")
     parser.add_argument("--exploration", type=str, default="exponential", help="Choose exploration strategy: linear, exponential, constant_ten, constant_two, no_exploration ")
-    parser.add_argument("--hint_size", type=int, default=10, help="Size of hint-to-goal transitions. Choose from []")
     parser.add_argument("--reset_freq", type=int, default=50, help="Frequency of resetting the Neural Network (Q-function approximator). Choose from  []")
-
+    parser.add_argument("--pos_init", type=str, default="uniform", help="Choose position initialization strategy: gaussian_1, gaussian_2, uniform, linear, exponential")
+    
     main(parser.parse_args())
 
 # TODO: Save the terminal output to a log file, present in regressor code

@@ -60,11 +60,20 @@ class SteerboxEnv:
         return ((2*random.random())-1)*limit
     
     #set the starting position of the wheel
-    def reset(self, epoch_no, epochs):
+    def reset(self, epoch_no, epochs, position_init_method):
+
+        position_init_func = {
+            "gaussian_1": self.position_gaussian_1,
+            "gaussian_2": self.position_gaussian_2,
+            "uniform": self.position_uniform,
+            "linear": self.increment_position_linearly,
+            "exponential": self.increment_position_exponentially
+        }
         
-        # Change this function to any of the 5 choices above, while performing experiments
-        pos = self.position_uniform(epoch_no, epochs)
-        #print("Start Position", pos)
+        if position_init_method not in position_init_func:
+            raise ValueError("Invalid position_init_method. Available options are: gaussian_1, gaussian_2, uniform, linear, exponential")
+        
+        pos = position_init_func[position_init_method](epoch_no, epochs)
 
         # initialize the current state
         self.state = State(pos, 0, 0)

@@ -86,8 +86,8 @@ class NFQAgent:
 
         return np.array(loss_collection), loss.item()
 
-    def evaluate(self, nfq_env, max_steps, epoch_no, epochs):
-        experiences, total_cost = nfq_env.experience(self.get_best_action, max_steps, epoch_no, epochs)
+    def evaluate(self, nfq_env, max_steps, epoch_no, epochs, pos_init):
+        experiences, total_cost = nfq_env.experience(self.get_best_action, max_steps, epoch_no, epochs, pos_init)
         final_state = experiences[-1][3]
 
         success = (

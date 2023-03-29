@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from Utils import plots
+from Utils.plots import Plots
 
 class SteerboxNFQ:
     def __init__(self, env):
@@ -24,10 +24,11 @@ class SteerboxNFQ:
         # Minimum time control problem has a step cost
         # A penalty, when it neither succeeds nor fails
         self.step_cost = 0.001
+        self.success_plot = Plots("Success")
 
-    def reset(self, epoch_no, epochs):
+    def reset(self, epoch_no, epochs, position_init_method):
         # Reset the environment and return the initial state
-        return self.env.reset(epoch_no, epochs)
+        return self.env.reset(epoch_no, epochs, position_init_method)
     
     def step(self, action):
         state = self.env.step(action)
@@ -56,8 +57,8 @@ class SteerboxNFQ:
     def close(self):
         self.env.close()
 
-    def experience(self, get_best_action, max_steps, epoch_no, epochs):
-        state = self.reset(epoch_no, epochs)
+    def experience(self, get_best_action, max_steps, epoch_no, epochs, position_init_method):
+        state = self.reset(epoch_no, epochs, position_init_method)
         experiences = []
         
         total_cost = float(0.0)
@@ -71,18 +72,20 @@ class SteerboxNFQ:
             #print("step:{} -> State(pos={:.4f}, vel={:.4f}, voltage={:.4f}), Cost= {}".format(step, *next_state, cost), end="\n")
             
             state = next_state
-            if step ==249:
-                #print("250:", state)
+            if step == max_steps-1:
                 if -0.05<next_state[0]<0.05 and -0.01<next_state[1]<0.01:
-                    print("-------SUCCESS!!-------------")
+                    print("\t-------------SUCCESS!!-------------")
                     success_indicator = 1
-                print("step:{} -> State(pos={:.4f}, vel={:.4f}, voltage={:.4f}), Cost= {}".format(step, *next_state, cost), end="\n")
+                else: 
+                    print("\tReached the end of episode, neither success nor failure")
+
+                print("\tstep:{} -> State(pos={:.4f}, vel={:.4f}, voltage={:.4f}), Cost= {}".format(step, *next_state, cost), end="\n")
                 
             if failed:
                 break 
         
         if success_indicator ==1:
-            plots.plot_success(experiences, max_steps)
+            self.success_plot.plot_success(experiences, max_steps, epoch_no)
             
         return success_indicator, experiences, total_cost
     
