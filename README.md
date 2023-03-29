@@ -18,7 +18,8 @@ Related: [Paper](https://arxiv.org/abs/2108.00138),  [Website](https://stars-cs.
 ------
 ## 1. Installation and Major Code Dependencies
 
-Major dependencies are 
+Built on `Python 3.9.16`, Install NVIDIA Drivers + CUDA if you want to use GPU.
+Intstall requirements:
 
 ```
 pip install -r requirements.txt 
@@ -41,6 +42,8 @@ pip install -r requirements.txt
 
 `Utils folder`: Provides utilities for generating plots and exploration strategies.
 
+`Hardware_Data/ Simulation_Data folders`: Stores session data for runs
+
 ------
 ## 3. Running the Code:
 
@@ -49,7 +52,10 @@ pip install -r requirements.txt
 python NFQ_main.py 
 
 # run on experiment related arguments
-python NFQ_main.py ....
+python NFQ_main.py --num_params [AAA] --hint_size [BBB] --exploration [CCC] --reset_freq [DDD] --pos_init [EEE]
+
+# To save the files of the run
+python NFQ_main.py --save_to_file
 ```
 
 ------
