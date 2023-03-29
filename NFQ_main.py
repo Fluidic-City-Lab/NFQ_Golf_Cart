@@ -17,16 +17,17 @@ import lzma
 import random
 import argparse
 
+import pickle
 import numpy as np 
 import torch 
 
 from NFQ_Agent import NFQAgent
 from NFQ_model import NFQNetwork
-from NFQ_Env import Simulation
+from Vehicle_Env import Simulation
 from Steerbox_Env import SteerboxEnv
 from Steerbox_NFQ import SteerboxNFQ 
 
-from utils.exploration_strategies import exploration_strategies
+from Utils.exploration_strategies import exploration_strategies
 
 class NFQMain:
     def __init__(self, args):
@@ -59,22 +60,30 @@ class NFQMain:
             if self.args.save_to_file:
                 if not os.path.exists("Simulation_Data"):
                     os.mkdir("Simulation_Data")
+            data_file_name = "session_data/episode_"+time.strftime("%Y%m%d_%H%M%S")+".pickle.xz"
 
         else:
             # TODO: implement hardware environment
-            print("Hardware environment not implemented yet.")
+            print("Hardware environment not implemented in the main code base yet.")
             sys.exit()
         
         self.nfq_env = SteerboxNFQ(self.steer_env)
-        self.nfq_agent = NFQAgent(self.args)   
+        self.nfq_agent = NFQAgent( ,self.args)   
 
         # Things that measure, collect
         start = time.time()
         total_cost = 0
         success_count = 0 
+
         all_learn_data = [] 
         all_experiences = [] 
+        loss_total = [] 
 
+        # Store hint-to-goal transitions (state, action) and q_value
+        goal_state_action_b = []
+        goal_target_q_values = []
+
+        # Which strategy to use for exploration
         exploration = exploration_strategies[self.args.exploration]
 
         for ep in range(1, self.args.episodes+1):
@@ -86,19 +95,87 @@ class NFQMain:
             all_experiences.extend(new_experiences)
             total_cost += episode_cost
 
-            # hint-to-goal (% of total transitions)
-            size = 
-
+            # hint-to-goal (% of total transitions), has to be calculated every time
+            # only calculate how much to add i.e. the difference between desired and current
+            new_size = int((1/100)*self.args.hint_size + 1) - len(goal_state_action_b)
+            
             # Goal pattern set 
+            new_goal_state_action_b, new_goal_target_q_values = self.nfq_env.generate_goal_pattern_set(size = new_size)
+            goal_state_action_b.extend(new_goal_state_action_b)
+            goal_target_q_values.extend(new_goal_target_q_values)
 
+            # Convert to tensors
+            goal_state_action_b = torch.FloatTensor(goal_state_action_b)
+            goal_target_q_values = torch.FloatTensor(goal_target_q_values)
+
+            # Attach hint-to-goal transitions
+            state_action_b = torch.cat([state_action_b, goal_state_action_b], dim=0)
+            target_q_values = torch.cat([target_q_values, goal_target_q_values], dim=0)
+
+            # Hand over the current neural network
+            old_agent = self.nfq_agent
 
             # Reset the Neural Network (Q-function approximator)
             if ep % self.args.reset_freq == 0:
                 # Reset the weights
+                print("\nResetting Network and Optimizer\n")
                 self.nfq_agent = NFQAgent(self.args)
+            
+            # Train the agent
+            loss_collection, last_step_loss = self.nfq_agent.train((state_action_b, target_q_values))
+            loss_total.append(loss_collection)
+
+            # DIABLE STAND-ALONE EVALUATION 
+            # # Some metrics for evaluations 
+            # num_evals = 0
+            # eval_episode_length = 0
+            # eval_episode_cost = 0
+
+            # # Evaluate the agent 
+            # while False: 
+            #     eval_episode_length, eval_success, eval_episode_cost = nfq_agent.evaluate(nfq_env, EVAL_ENV_MAX_STEPS, epoch, EPOCHS)
+            #     if not eval_success: 
+            #         break
+            #     num_evals += 1
 
 
-        
+            # remember everything about this epoch
+            all_learn_data.append({
+                "epoch": ep, # index
+                
+                # length of episode, its total cost, and the loss of the last step
+                "episode": (len(new_experiences), episode_cost, last_step_loss),
+
+                # list of (state, action, cost, next_state, failed) tuples
+                "all_experiences": all_experiences,
+                
+                # list of (*state, action) tuples given as input to the network
+                "state_action_b": np.asarray(state_action_b),
+                
+                # the Q function values the network should learn
+                "target_q_values": np.asarray(target_q_values),
+                
+                # the network that generated the above values and ran this episode
+                "net_state": old_agent.net.state_dict(),
+            })
+            
+            # At the end of the epsodes, save data
+            # Saving will take time 
+            if self.args.save_to_file:
+                try:
+                    p = pickle.dumps(all_learn_data)
+                    save_path = f"./{self.args.env}/{data_file_name}" 
+                    with lzma.open(save_path, "wb") as f:
+                        f.write(p)
+                    del p
+
+                except KeyboardInterrupt:
+                    # re-try the save if the user accidentally interrupted it
+                    continue
+                break
+
+            end = time.time()
+            print("\nTotal Time elapsed = {} seconds".format(end - start))
 
 
 def main(args):
@@ -122,6 +199,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_to_file", type=bool, default=False, help="Save results to file")
     
     ## Related to experiments
+    
     parser.add_argument("--exploration", type=str, default="epsilon_greedy", help="Choose exploration strategy:  XXX ")
     parser.add_argument("--hint_size", type=int, default=10, help="Size of hint-to-goal transitions. Choose from []")
     parser.add_argument("--reset_freq", type=int, default=50, help="Frequency of resetting the Neural Network (Q-function approximator). Choose from  []")

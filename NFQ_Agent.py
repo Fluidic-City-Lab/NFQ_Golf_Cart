@@ -7,10 +7,13 @@ import torch.optim as optim
 import torch.nn as nn
 import numpy as np 
 
+from NFQ_model import NFQNetwork
+
 class NFQAgent:
-    def __init__(self, net, args):
-        self.net = net 
+    def __init__(self, args):
+        
         self.args = args
+        self.net = NFQNetwork() 
         self.optimizer = optim.Rprop(self.net.parameters()) # Rprop is the default for NFQ
         
     def get_best_action(self, state):
@@ -81,7 +84,17 @@ class NFQAgent:
 
         return np.array(loss_collection), loss.item()
 
-    def evaluate(self,):
-        pass
+    def evaluate(self, nfq_env, max_steps, epoch_no, epochs):
+        experiences, total_cost = nfq_env.experience(self.get_best_action, max_steps, epoch_no, epochs)
+        final_state = experiences[-1][3]
+
+        success = (
+            len(experiences) == max_steps
+            and abs(final_state[0]) <= nfq_env.pos_success
+            and abs(final_state[1]) <= nfq_env.vel_success
+        )
+
+        return len(experiences), success, total_cost
+
 
 
