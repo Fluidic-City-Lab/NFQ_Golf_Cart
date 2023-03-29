@@ -24,7 +24,7 @@ class SteerboxNFQ:
         # Minimum time control problem has a step cost
         # A penalty, when it neither succeeds nor fails
         self.step_cost = 0.001
-        self.success_plot = Plots("Success")
+        self.success_plot = Plots()
 
     def reset(self, epoch_no, epochs, position_init_method):
         # Reset the environment and return the initial state

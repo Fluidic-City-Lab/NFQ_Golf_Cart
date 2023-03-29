@@ -26,6 +26,7 @@ from NFQ_model import NFQNetwork
 from Vehicle_Env import Simulation
 from Steerbox_Env import SteerboxEnv
 from Steerbox_NFQ import SteerboxNFQ 
+from Utils.plots import Plots
 
 from Utils.exploration_strategies import exploration_strategies
 
@@ -34,7 +35,7 @@ class NFQMain:
         self.args = args 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("Using device: ", self.device)
-
+        self.plots = Plots()
         
     def train(self):
         
@@ -62,9 +63,10 @@ class NFQMain:
 
             # Create folder to save sim data if required
             if self.args.save_to_file:
-                if not os.path.exists("Simulation_Data"):
-                    os.mkdir("Simulation_Data")
-            data_file_name = "session_data/episode_"+time.strftime("%Y%m%d_%H%M%S")+".pickle.xz"
+                save_folder = f"./{self.args.env}_Data"
+                if not os.path.exists(save_folder):
+                    os.mkdir(save_folder)
+            data_file_path = save_folder + "/episode_"+time.strftime("%Y%m%d_%H%M%S")+".pickle.xz"
 
         else:
             # TODO: implement hardware environment
@@ -178,21 +180,29 @@ class NFQMain:
             # At the end of the epsodes, save data
             # Saving will take time 
             if self.args.save_to_file:
-                try:
-                    p = pickle.dumps(all_learn_data)
-                    save_path = f"./{self.args.env}/{data_file_name}" 
-                    with lzma.open(save_path, "wb") as f:
-                        f.write(p)
-                    del p
+                if ep % 100 == 0: # change this upon necessity
+                    try:
+                        p = pickle.dumps(all_learn_data)
+                        with lzma.open(data_file_path, "wb") as f:
+                            f.write(p)
+                        del p
 
-                except KeyboardInterrupt:
-                    # re-try the save if the user accidentally interrupted it
-                    continue
-                break
+                    except KeyboardInterrupt:
+                        # re-try the save if the user accidentally interrupted it
+                        continue
+                    #break
 
-            end = time.time()
-            print(f"\n\tTotal Time elapsed = {round((end - start), 2)} seconds")
+        end = time.time()
+        print("................................ END ................................")
+        print(f"\n\tTotal Time elapsed during training= {round((end - start), 2)} seconds")
+        print("\n.....................................................................\n")
 
+        self.plots.plot_cost(all_learn_data, self.args.episodes)
+        print("Find all polots in the Plots folder.")
+        if self.args.save_to_file:
+            print("Also find the data of current run.")
+            
+        print(f"Stats:\n\tEpisodes with success: {success_count}")
 
 def main(args):
     nfq = NFQMain(args)
@@ -212,8 +222,9 @@ if __name__ == "__main__":
     ## 
     parser.add_argument("--agent_epochs", type=int, default=150, help="How many training epochs of patter-set for agent training")
     parser.add_argument("--gamma", type=int, default=1.0, help="Discount factor")
-    parser.add_argument("--save_to_file", type=bool, default=False, help="Save results to file")
-    
+    parser.add_argument("--save_to_file", action="store_true", default=False, help="Save results to file")
+
+
     ## Args related to experiments form the paper (https://arxiv.org/pdf/2108.00138.pdf)
     parser.add_argument("--num_params", type=int, default=171, help="Number of parameters to be learned, choose from 39, 61, 91, 121, 171")
     parser.add_argument("--hint_size", type=int, default=10, help="Size of hint-to-goal transitions. Choose from 1%, 2%, 5%, 10%, 20%")
