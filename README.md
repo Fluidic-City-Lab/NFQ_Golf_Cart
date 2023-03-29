@@ -46,6 +46,7 @@ pip install -r requirements.txt
 `Hardware_Data/ Simulation_Data folders`: Stores session data for runs.
 
 `Hardware_Code folder`: Code to interface with the Arduino hardware and train hardware controller.   
+
 ------
 ## 3. Running the Code:
 
